@@ -16,6 +16,11 @@
 
 #if !(defined(_MSC_VER) || defined(__MINGW32__) || defined(_WIN32))
 
+#include "cabal_macros.h"
+
+#if MIN_VERSION_unix(2,7,1)
+# define HSUNIX_EXECVPE_H_NO_COMPAT
+#endif
 #include "execvpe.h"
 
 /* ----------------------------------------------------------------------------
@@ -218,7 +223,11 @@ runInteractiveProcess (char *const args[],
         /* the child */
         if (environment) {
             // XXX Check result
+#if MIN_VERSION_unix(2,7,1)
+            __hsunix_execvpe(args[0], args, environment);
+#else
             execvpe(args[0], args, environment);
+#endif
         } else {
             // XXX Check result
             execvp(args[0], args);
